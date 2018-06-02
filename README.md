@@ -52,3 +52,6 @@ Example usage: ```$ gocrawld -host localhost -port 12345 &
 $ curl -XPOST localhost:12345 --data @example/job.json
 <job output>
 ```
+
+Example docker usage:
+```docker run --rm --net=host --detach johnstcn/gocrawld```
