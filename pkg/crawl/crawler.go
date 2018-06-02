@@ -13,7 +13,10 @@ import (
 
 // Crawler is something that executes Jobs.
 type Crawler interface {
-	Crawl(j *Job) (Result, error)
+	// Crawl executes Job synchonously.
+	Crawl(j Job) (Result, error)
+	// CrawlAsync executes Job asynchronously in a separate goroutine.
+	CrawlAsync(j Job) (<-chan Result, <-chan error)
 }
 
 // New returns a new Crawler.
@@ -66,8 +69,22 @@ type Doer interface {
 
 var _ Doer = (*http.Client)(nil)
 
-func (c *crawler) Crawl(j *Job) (Result, error) {
+func (c *crawler) Crawl(j Job) (Result, error) {
+	return c.crawl(&j)
+}
 
+func (c *crawler) CrawlAsync(j Job) (<-chan Result, <-chan error) {
+	rch := make(chan Result)
+	ech := make(chan error)
+	go func() {
+		res, err := c.crawl(&j)
+		rch <- res
+		ech <- err
+	}()
+	return rch, ech
+}
+
+func (c *crawler) crawl(j *Job) (Result, error) {
 	req, err := c.req(&j.Request)
 	if err != nil {
 		return Result{}, errors.Wrap(err, "invalid request")

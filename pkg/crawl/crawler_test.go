@@ -25,7 +25,7 @@ func Test_Crawl_ErrBadRequest(t *testing.T) {
 		},
 	}
 
-	_, err := c.Crawl(&Job{})
+	_, err := c.crawl(&Job{})
 	require.EqualError(t, err, "invalid request: a test error")
 }
 
@@ -39,7 +39,7 @@ func Test_Crawl_ErrDoRequest(t *testing.T) {
 		},
 	}
 
-	_, err := c.Crawl(&Job{})
+	_, err := c.crawl(&Job{})
 	require.EqualError(t, err, "doing request: a test error")
 }
 
@@ -55,7 +55,7 @@ func Test_Crawl_ErrDrainBody(t *testing.T) {
 		},
 	}
 
-	_, err := c.Crawl(&Job{})
+	_, err := c.crawl(&Job{})
 	require.EqualError(t, err, "draining response body: a test error")
 }
 
@@ -74,7 +74,7 @@ func Test_Crawl_ErrParse(t *testing.T) {
 		},
 	}
 
-	_, err := c.Crawl(&Job{})
+	_, err := c.crawl(&Job{})
 	require.EqualError(t, err, "parsing retrieved page: a test error")
 }
 
@@ -100,7 +100,7 @@ func Test_Crawl_OK(t *testing.T) {
 		},
 	}
 
-	res, err := c.Crawl(&Job{})
+	res, err := c.crawl(&Job{})
 	require.NoError(t, err)
 	require.EqualValues(t, expected, res)
 }

@@ -14,11 +14,11 @@ type Crawler struct {
 }
 
 // Crawl provides a mock function with given fields: j
-func (mockerySelf *Crawler) Crawl(j *crawl.Job) (crawl.Result, error) {
+func (mockerySelf *Crawler) Crawl(j crawl.Job) (crawl.Result, error) {
 	ret := mockerySelf.Called(j)
 
 	var r0 crawl.Result
-	if rf, ok := ret.Get(0).(func(*crawl.Job) crawl.Result); ok {
+	if rf, ok := ret.Get(0).(func(crawl.Job) crawl.Result); ok {
 		r0 = rf(j)
 	} else {
 		if ret.Get(0) != nil {
@@ -27,10 +27,35 @@ func (mockerySelf *Crawler) Crawl(j *crawl.Job) (crawl.Result, error) {
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*crawl.Job) error); ok {
+	if rf, ok := ret.Get(1).(func(crawl.Job) error); ok {
 		r1 = rf(j)
 	} else {
 		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CrawlAsync provides a mock function with given fields: j
+func (mockerySelf *Crawler) CrawlAsync(j crawl.Job) (<-chan crawl.Result, <-chan error) {
+	ret := mockerySelf.Called(j)
+
+	var r0 <-chan crawl.Result
+	if rf, ok := ret.Get(0).(func(crawl.Job) <-chan crawl.Result); ok {
+		r0 = rf(j)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(<-chan crawl.Result)
+		}
+	}
+
+	var r1 <-chan error
+	if rf, ok := ret.Get(1).(func(crawl.Job) <-chan error); ok {
+		r1 = rf(j)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(<-chan error)
+		}
 	}
 
 	return r0, r1
