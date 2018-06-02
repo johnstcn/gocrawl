@@ -1,0 +1,30 @@
+{
+    "request": {
+        "url": "https://news.ycombinator.com",
+        "method": "GET"
+    },
+    "rules": [
+        {
+            "name": "title",
+            "xpath": "//td[@class=\"title\"]/a[@class=\"storylink\"]/text()"
+        },
+        {
+            "name": "link",
+            "xpath": "//td[@class=\"title\"]/a[@class=\"storylink\"]/@href"
+        },
+        {
+            "name": "posted",
+            "xpath": "//td[@class=\"subtext\"]/span[@class=\"age\"]/a/text()"
+        },
+        {
+            "name": "points",
+            "xpath": "//td[@class=\"subtext\"]/span[@class=\"score\"]/text()",
+            "filters": [
+                {
+                    "find": "(?s)^.*?(\\d+)\\s+points.*?$",
+                    "replace": "$1"
+                }
+            ]
+        }
+    ]
+}
