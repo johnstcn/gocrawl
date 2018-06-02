@@ -26,8 +26,9 @@ func newCrawler(opts CrawlerOpts) *crawler {
 		Timeout: opts.Timeout,
 	}
 	return &crawler{
-		httpClient: httpClient,
-		parse:      xmlpathParse,
+		req:   prepareRequest,
+		do:    httpClient.Do,
+		parse: xmlpathParse,
 	}
 }
 
@@ -41,14 +42,21 @@ var DefaultCrawlerOpts = CrawlerOpts{
 	Timeout: time.Duration(10) * time.Second,
 }
 
+// ReqFunc is a function called to prepare a HTTP request
+type ReqFunc func(j *Job) (*http.Request, error)
+
+// DoFunc is a function called to perform a HTTP request
+type DoFunc func(*http.Request) (*http.Response, error)
+
 // ParseFunc is a function called on body to run rules and return a Result
 type ParseFunc func(body []byte, rules []Rule) (Result, error)
 
 var _ Crawler = (*crawler)(nil)
 
 type crawler struct {
-	httpClient Doer
-	parse      ParseFunc
+	req   ReqFunc
+	do    DoFunc
+	parse ParseFunc
 }
 
 // Doer wraps http.Client
@@ -60,12 +68,12 @@ var _ Doer = (*http.Client)(nil)
 
 func (c *crawler) Crawl(j *Job) (Result, error) {
 
-	req, err := c.prepareRequest(j)
+	req, err := c.req(j)
 	if err != nil {
 		return Result{}, errors.Wrap(err, "invalid request")
 	}
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return Result{}, errors.Wrap(err, "doing request")
 	}
@@ -84,7 +92,7 @@ func (c *crawler) Crawl(j *Job) (Result, error) {
 	return output, nil
 }
 
-func (c *crawler) prepareRequest(j *Job) (*http.Request, error) {
+func prepareRequest(j *Job) (*http.Request, error) {
 	req, err := http.NewRequest(j.Request.Method, j.Request.URL, strings.NewReader(j.Request.Body))
 	if err != nil {
 		return &http.Request{}, err
