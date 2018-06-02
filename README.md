@@ -2,10 +2,11 @@
 
 Gocrawl is a simple command-line utility to crawl websites.
 It uses `gopkg.in/xmlpath.v2` to perform HTML parsing and XPath evaluation.
+
+See the `examples` directory for an example job specification.
 Example usage and output:
 
-```
-./gocrawl -input example/job.json 
+```$ gocrawl -input example/job.json
 {
     "day": {
         "error": "",
@@ -40,4 +41,14 @@ Example usage and output:
         ]
     }
 }
-``` 
+```
+
+# gocrawld
+
+Gocrawld is a daemon version of gocrawl. It accepts a POST request containing a job specification identical to that of `gocrawl` and returns the result of executing the crawl job, encoded as JSON.
+
+Example usage: ```$ gocrawld -host localhost -port 12345 &
+<pid>
+$ curl -XPOST localhost:12345 --data @example/job.json
+<job output>
+```
