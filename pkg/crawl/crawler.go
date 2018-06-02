@@ -43,7 +43,7 @@ var DefaultCrawlerOpts = CrawlerOpts{
 }
 
 // ReqFunc is a function called to prepare a HTTP request
-type ReqFunc func(j *Job) (*http.Request, error)
+type ReqFunc func(r *Request) (*http.Request, error)
 
 // DoFunc is a function called to perform a HTTP request
 type DoFunc func(*http.Request) (*http.Response, error)
@@ -68,7 +68,7 @@ var _ Doer = (*http.Client)(nil)
 
 func (c *crawler) Crawl(j *Job) (Result, error) {
 
-	req, err := c.req(j)
+	req, err := c.req(&j.Request)
 	if err != nil {
 		return Result{}, errors.Wrap(err, "invalid request")
 	}
@@ -92,13 +92,13 @@ func (c *crawler) Crawl(j *Job) (Result, error) {
 	return output, nil
 }
 
-func prepareRequest(j *Job) (*http.Request, error) {
-	req, err := http.NewRequest(j.Request.Method, j.Request.URL, strings.NewReader(j.Request.Body))
+func prepareRequest(r *Request) (*http.Request, error) {
+	req, err := http.NewRequest(r.Method, r.URL, strings.NewReader(r.Body))
 	if err != nil {
 		return &http.Request{}, err
 	}
 
-	for k, v := range j.Request.Headers {
+	for k, v := range r.Headers {
 		req.Header.Add(k, v)
 	}
 

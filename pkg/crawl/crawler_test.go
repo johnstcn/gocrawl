@@ -20,7 +20,7 @@ func (r *errReader) Read(p []byte) (n int, err error) {
 
 func Test_Crawl_ErrBadRequest(t *testing.T) {
 	c := &crawler{
-		req: func(j *Job) (*http.Request, error) {
+		req: func(r *Request) (*http.Request, error) {
 			return nil, errors.New("a test error")
 		},
 	}
@@ -31,7 +31,7 @@ func Test_Crawl_ErrBadRequest(t *testing.T) {
 
 func Test_Crawl_ErrDoRequest(t *testing.T) {
 	c := &crawler{
-		req: func(j *Job) (*http.Request, error) {
+		req: func(r *Request) (*http.Request, error) {
 			return httptest.NewRequest(http.MethodGet, "http://test.com", nil), nil
 		},
 		do: func(*http.Request) (*http.Response, error) {
@@ -45,7 +45,7 @@ func Test_Crawl_ErrDoRequest(t *testing.T) {
 
 func Test_Crawl_ErrDrainBody(t *testing.T) {
 	c := &crawler{
-		req: func(j *Job) (*http.Request, error) {
+		req: func(r *Request) (*http.Request, error) {
 			return httptest.NewRequest(http.MethodGet, "http://test.com", nil), nil
 		},
 		do: func(*http.Request) (*http.Response, error) {
@@ -61,7 +61,7 @@ func Test_Crawl_ErrDrainBody(t *testing.T) {
 
 func Test_Crawl_ErrParse(t *testing.T) {
 	c := &crawler{
-		req: func(j *Job) (*http.Request, error) {
+		req: func(r *Request) (*http.Request, error) {
 			return httptest.NewRequest(http.MethodGet, "http://test.com", nil), nil
 		},
 		do: func(*http.Request) (*http.Response, error) {
@@ -87,7 +87,7 @@ func Test_Crawl_OK(t *testing.T) {
 	}
 
 	c := &crawler{
-		req: func(j *Job) (*http.Request, error) {
+		req: func(r *Request) (*http.Request, error) {
 			return httptest.NewRequest(http.MethodGet, "http://test.com", nil), nil
 		},
 		do: func(*http.Request) (*http.Response, error) {
@@ -103,4 +103,28 @@ func Test_Crawl_OK(t *testing.T) {
 	res, err := c.Crawl(&Job{})
 	require.NoError(t, err)
 	require.EqualValues(t, expected, res)
+}
+
+func Test_PrepareRequest_ErrRequest(t *testing.T) {
+	invalidReq := &Request{
+		Method: "Not A Valid HTTP Verb",
+	}
+	_, err := prepareRequest(invalidReq)
+	require.EqualError(t, err, "net/http: invalid method \"Not A Valid HTTP Verb\"")
+}
+
+func Test_PrepareRequest_OK(t *testing.T) {
+	validReq := &Request{
+		Method: http.MethodGet,
+		URL:    "http://test.com",
+		Body:   "",
+		Headers: map[string]string{
+			"User-Agent": "some bot",
+		},
+	}
+	actual, err := prepareRequest(validReq)
+	require.NoError(t, err)
+	require.EqualValues(t, validReq.Method, actual.Method)
+	require.EqualValues(t, validReq.URL, actual.URL.String())
+	require.EqualValues(t, validReq.Headers["User-Agent"], actual.Header.Get("User-Agent"))
 }
