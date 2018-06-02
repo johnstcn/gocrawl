@@ -1,0 +1,62 @@
+{
+    "request": {
+        "url": "https://www.timeanddate.com/worldclock/ireland/dublin",
+        "method": "GET"
+    },
+    "rules": [
+        {
+            "name": "time",
+            "xpath": "//*[@id=\"ct\"]"
+        },
+        {
+            "name": "day",
+            "xpath": "//*[@id=\"ctdat\"]",
+            "filters": [
+                {
+                    "find": "^.*?([a-zA-z]+).*$",
+                    "replace": "$1"
+                }
+            ]
+        },
+        {
+            "name": "month",
+            "xpath": "//*[@id=\"ctdat\"]",
+            "filters": [
+                {
+                    "find": "^.*?\\S+\\s*\\d+\\s+([a-zA-Z]+).*$",
+                    "replace": "$1"
+                }
+            ]
+        },
+        {
+            "name": "invalid_xpath",
+            "xpath": "//*[@id=\\\"ctdat\"]",
+            "filters": [
+                {
+                    "find": "^.*?\\S+\\s*\\d+\\s+([a-zA-Z]+).*$",
+                    "replace": "$1"
+                }
+            ]
+        },
+        {
+            "name": "invalid_regexp",
+            "xpath": "//*[@id=\"ctdat\"]",
+            "filters": [
+                {
+                    "find": "[a-z+",
+                    "replace": "$1"
+                }
+            ]
+        },
+        {
+            "name": "no_matching_xpath",
+            "xpath": "//*[@id=\"cttdat\"]",
+            "filters": [
+                {
+                    "find": "^.*?\\S+\\s*\\d+\\s+([a-zA-Z]+).*$",
+                    "replace": "$1"
+                }
+            ]
+        }
+    ]
+}
