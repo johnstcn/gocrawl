@@ -18,10 +18,10 @@ type Crawler interface {
 
 // New returns a new Crawler.
 func New(opts CrawlerOpts) Crawler {
-	return new(opts)
+	return newCrawler(opts)
 }
 
-func new(opts CrawlerOpts) *crawler {
+func newCrawler(opts CrawlerOpts) *crawler {
 	httpClient := &http.Client{
 		Timeout: opts.Timeout,
 	}
