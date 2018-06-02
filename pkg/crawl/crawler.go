@@ -70,6 +70,7 @@ func (c *crawler) Crawl(j *Job) (Result, error) {
 		return Result{}, errors.Wrap(err, "doing request")
 	}
 
+	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return Result{}, errors.Wrap(err, "draining response body")
