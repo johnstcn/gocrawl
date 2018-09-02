@@ -1,0 +1,17 @@
+language: go
+
+go:
+  - 1.8.x
+  - 1.9.x
+  - 1.10.x
+  - 1.11.x
+
+before_install:
+  - go get -t -v ./...
+
+script:
+  - go build github.com/johnstcn/gocrawl/...
+  - go test -v -race -coverprofile=coverage.txt -covermode=atomic github.com/johnstcn/gocrawl/...
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
