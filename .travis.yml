@@ -11,7 +11,7 @@ before_install:
 
 script:
   - go build github.com/johnstcn/gocrawl/...
-  - go test -v -race -coverprofile=coverage.txt -covermode=atomic github.com/johnstcn/gocrawl/...
+  - go test -v -race -coverprofile=coverage.txt -covermode=atomic github.com/johnstcn/gocrawl/pkg/crawl
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
