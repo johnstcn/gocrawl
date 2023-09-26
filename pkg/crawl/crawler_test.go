@@ -2,7 +2,7 @@ package crawl
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -50,7 +50,7 @@ func Test_Crawl_ErrDrainBody(t *testing.T) {
 		},
 		do: func(*http.Request) (*http.Response, error) {
 			return &http.Response{
-				Body: ioutil.NopCloser(&errReader{}),
+				Body: io.NopCloser(&errReader{}),
 			}, nil
 		},
 	}
@@ -66,7 +66,7 @@ func Test_Crawl_ErrParse(t *testing.T) {
 		},
 		do: func(*http.Request) (*http.Response, error) {
 			return &http.Response{
-				Body: ioutil.NopCloser(strings.NewReader("")),
+				Body: io.NopCloser(strings.NewReader("")),
 			}, nil
 		},
 		parse: func(b []byte, rules []Rule) (Result, error) {
@@ -92,7 +92,7 @@ func Test_Crawl_OK(t *testing.T) {
 		},
 		do: func(*http.Request) (*http.Response, error) {
 			return &http.Response{
-				Body: ioutil.NopCloser(strings.NewReader("")),
+				Body: io.NopCloser(strings.NewReader("")),
 			}, nil
 		},
 		parse: func(b []byte, rules []Rule) (Result, error) {

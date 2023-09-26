@@ -1,9 +1,7 @@
 package crawl
 
-//go:generate mockery -package=crawltest -interface=Crawler
-
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -96,7 +94,7 @@ func (c *crawler) crawl(j *Job) (Result, error) {
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return Result{}, errors.Wrap(err, "draining response body")
 	}
